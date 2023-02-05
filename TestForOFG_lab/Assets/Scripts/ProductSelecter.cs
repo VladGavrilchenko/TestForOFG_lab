@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class ProductSelecter : MonoBehaviour
 {
     [SerializeField] private Button[] _fructsButtonsActivators;
-    [SerializeField] private ProductMover[] _productMovers;
+    [SerializeField] private Product[] _productMovers;
     private int _indxActiveProduct;
     private IStartGame _startGame;
 

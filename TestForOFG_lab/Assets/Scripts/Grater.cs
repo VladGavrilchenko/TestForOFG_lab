@@ -10,12 +10,12 @@ public class Grater : MonoBehaviour
     private void Start()
     {
         _gameState = FindObjectOfType<GameState>();
-        _iIsTouch = FindObjectOfType<SwipeController>().GetComponent<IIsTouch>();
+        _iIsTouch = FindObjectOfType<TapController>().GetComponent<IIsTouch>();
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.GetComponent<Hand>() != null)
+        if (other.GetComponent<Hand>())
         {
             _gameState.Cut();
         }
@@ -26,6 +26,12 @@ public class Grater : MonoBehaviour
         if(other.GetComponent<ProductMover>() && _iIsTouch.IsTouch() == false)
         {
             _gameState.Win();
+        }
+        else if (other.GetComponent<ProductPart>() != null)
+        {
+            ProductPart productPart = other.GetComponent<ProductPart>();
+            productPart.InstantiateProductPartical();
+            productPart.SetActive(false);
         }
     }
 }

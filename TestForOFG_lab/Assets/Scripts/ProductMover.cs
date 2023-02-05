@@ -10,37 +10,71 @@ public class ProductMover : MonoBehaviour
     [SerializeField] private float _verticalSpeed;
     [SerializeField] private float _horizontalSpeed;
 
+    private float _verticalDirection =1;
+    private bool _isDirectionDown;
     private float _moveVerticalPosition;
     private float _moveHorizontalPosition;
     private Vector3 _startVectorPosition;
 
-    private SwipeController _swipeController;
+    private TapController _tapController;
+
+    private void Awake()
+    {
+        _startVectorPosition = transform.position;
+    }
 
     private void Start()
     {
-        _swipeController = FindObjectOfType<SwipeController>();
-        _startVectorPosition = transform.position;
-        SetActive(false);
+        _tapController = FindObjectOfType<TapController>();
     }
 
     private void Update()
     {
-        Move();
+        if (_tapController.IsTouch())
+        {
+            MoveFoward();
+        }
+        else
+        {
+            MoveToStartPostion();
+        }
     }
 
-    public void SetActive(bool isActive)
+    public void ResetPosition()
     {
         transform.position = _startVectorPosition;
-        gameObject.SetActive(isActive);
     }
 
-    private void Move()
+    private void MoveFoward()
     {
-        _moveHorizontalPosition = transform.localPosition.x + _horizontalSpeed * Time.deltaTime;
+        if (_isDirectionDown == false)
+        {
+            if (_moveVerticalPosition == _maxVerticalDistance)
+            {
+                _verticalDirection = -1;
+                _isDirectionDown = true;
+            }
+        }
+        else
+        {
+            if (_moveVerticalPosition == _minVerticalDistance)
+            {
+                _verticalDirection = 1;
+                _isDirectionDown = false;
+            }
+        }
 
-        _moveVerticalPosition = Mathf.Clamp(transform.localPosition.y + _swipeController.GetVerticalDirection() * Time.deltaTime * _verticalSpeed, _minVerticalDistance, _maxVerticalDistance);
- 
-        if (_moveVerticalPosition != _maxVerticalDistance && _moveVerticalPosition != _minVerticalDistance && _swipeController.GetVerticalDirection() != 0)
+        _moveHorizontalPosition = transform.localPosition.x + _horizontalSpeed * Time.deltaTime;
+        _moveVerticalPosition = Mathf.Clamp(transform.localPosition.y + _verticalDirection * Time.deltaTime * _verticalSpeed, _minVerticalDistance, _maxVerticalDistance);
+
+        transform.localPosition = new Vector3(_moveHorizontalPosition, _moveVerticalPosition, 0);
+    }
+
+    private void MoveToStartPostion()
+    {
+        _moveHorizontalPosition = transform.localPosition.x - _horizontalSpeed * Time.deltaTime;
+        _moveVerticalPosition *= Time.deltaTime;
+        if (transform.position.x > _startVectorPosition.x)
         {
             transform.localPosition = new Vector3(_moveHorizontalPosition, _moveVerticalPosition, 0);
         }
